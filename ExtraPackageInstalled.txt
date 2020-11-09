@@ -1,0 +1,4 @@
+﻿AWSSDK.Core
+AWSSDK.DynamoDBv2
+AWSSDK.Extensions.NETCore.Setup
+AWSSDK.S3
