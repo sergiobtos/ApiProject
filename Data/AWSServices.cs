@@ -1,7 +1,9 @@
 ﻿using Amazon;
 using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
-using Amazon.S3;
+using Amazon.DynamoDBv2.Model.Internal.MarshallTransformations;
+using ApiProject.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,19 +12,67 @@ using System.Threading.Tasks;
 
 namespace ApiProject.Data
 {
-    public class AWSServices
+    public class AWSServices : IAWSService
     {
+
         RegionEndpoint Region = RegionEndpoint.CACentral1;
         IAmazonDynamoDB dynamoDBClient { get; set; }
-        IAmazonS3 s3Client { get; set; }
-        public AWSServices(IAmazonDynamoDB dynamoDBClient, IAmazonS3 s3Client)
+        public AWSServices(IAmazonDynamoDB dynamoDBClient)
         {
             this.dynamoDBClient = dynamoDBClient;
-            this.s3Client = s3Client;
             CreateTable();
         }
 
+        //GetAll
+        public async Task<List<Employee>> GetAll()
+        {
+            DynamoDBContext Context = new DynamoDBContext(dynamoDBClient);
+            var conditions = new List<ScanCondition>();
+            var employees = await Context.ScanAsync<Employee>(conditions).GetRemainingAsync();
 
+            return employees;
+        }
+
+        //GetById
+        public Task<Employee> GetById(int Id)
+        {
+            DynamoDBContext Context = new DynamoDBContext(dynamoDBClient);
+            return Context.LoadAsync<Employee>(Id, default(System.Threading.CancellationToken));
+        }
+
+        //post
+        public async Task<Employee> CreateEmployee(Employee employee)
+        {
+            DynamoDBContext Context = new DynamoDBContext(dynamoDBClient);
+            await Context.SaveAsync<Employee>(employee);
+            return await GetById(employee.Id);
+        }
+
+        //put
+        public async Task UpdateEmployee(int Id, Employee employee)
+        {
+            var key = new Dictionary<string, AttributeValue>
+            {
+                { "Id", new AttributeValue { N = Id.ToString() } }
+            };
+            var result = await dynamoDBClient.UpdateItemAsync("Employee", key, new Dictionary<string, AttributeValueUpdate>
+            {
+                { "FullName", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.FullName } } },
+                { "Email", new AttributeValueUpdate { Action = AttributeAction.PUT , Value = new AttributeValue { S = employee.Email } } },
+                { "Address", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.Address} } },
+                { "Role", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.Role} } },
+                { "Salary", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { N = employee.Salary.ToString()} } },
+                { "StartContractDate", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.StartContractDate.ToString()} } },
+                { "EndContractDate", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.EndContractDate.ToString()} } },
+            });
+        }
+
+        //delete
+        public async Task DeleteEmployee(int Id)
+        {
+            DynamoDBContext Context = new DynamoDBContext(dynamoDBClient);
+            await Context.DeleteAsync<Employee>(Id); 
+        }
 
         public void CreateTable()
         {
@@ -46,7 +96,7 @@ namespace ApiProject.Data
                     },
                     AttributeDefinitions = new List<AttributeDefinition>
                     {
-                        new AttributeDefinition { AttributeName = "Id", AttributeType = ScalarAttributeType.S}
+                        new AttributeDefinition { AttributeName = "Id", AttributeType = ScalarAttributeType.N}
                     },
                 });
                 tablesAdded = true;
