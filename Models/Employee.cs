@@ -22,8 +22,8 @@ namespace ApiProject.Models
         [DynamoDBProperty]
         public decimal Salary { get; set; }
         [DynamoDBProperty]
-        public DateTime StartContractDate { get; set; }
+        public string StartContractDate { get; set; }
         [DynamoDBProperty]
-        public DateTime EndContractDate { get; set; }
+        public string EndContractDate { get; set; }
     }
 }

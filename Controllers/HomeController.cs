@@ -63,19 +63,19 @@ namespace ApiProject.Controllers
         }
 
         //Put
-        //[HttpPost]
-        //public async Task<ActionResult<Employee>> UpdateItem(Employee item)
-        //{
-        //    var employee = await new AWSServices(dynamoDBClient).UpdateEmployee(item);
+        [HttpPut]
+        public async Task<ActionResult<Employee>> UpdateItem(Employee item)
+        {
+            var employee = await new AWSServices(dynamoDBClient).UpdateEmployee(item);
 
-        //    return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
-        //}
+            return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
+        }
 
-        //Delete
-       // [HttpDelete("{id}")]
-        //public void Delete(string id)
-        //{
-        //    var employee = new AWSServices(dynamoDBClient).DeleteEmployee(id).Result;
-        //}
+        // Delete
+        [HttpDelete("{id}")]
+        public void Delete(string id)
+        {
+            var employee = new AWSServices(dynamoDBClient).DeleteEmployee(id).Result;
+        }
     }
 }

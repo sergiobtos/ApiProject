@@ -40,7 +40,8 @@ namespace ApiProject.Data
         public Task<Employee> GetById(string Id)
         {
             DynamoDBContext Context = new DynamoDBContext(dynamoDBClient);
-            return Context.LoadAsync<Employee>(Id, default(System.Threading.CancellationToken));
+            var employee = Context.LoadAsync<Employee>(Id, default(System.Threading.CancellationToken));
+            return employee;
         }
 
         //post
@@ -58,7 +59,7 @@ namespace ApiProject.Data
         { 
             var key = new Dictionary<string, AttributeValue>
             {
-                { "Id", new AttributeValue { N = employee.Id.ToString() } }
+                { "Id", new AttributeValue { S = employee.Id } }
             };
             var result = await dynamoDBClient.UpdateItemAsync("Employee", key, new Dictionary<string, AttributeValueUpdate>
             {
@@ -67,10 +68,11 @@ namespace ApiProject.Data
                 { "Address", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.Address} } },
                 { "Role", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.Role} } },
                 { "Salary", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { N = employee.Salary.ToString()} } },
-                { "StartContractDate", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.StartContractDate.ToString()} } },
-                { "EndContractDate", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.EndContractDate.ToString()} } },
+                { "StartContractDate", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.StartContractDate} } },
+                { "EndContractDate", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.EndContractDate} } },
             });
-            return GetById(employee.Id).Result; 
+            var updatedEmployee = GetById(employee.Id).Result;
+            return updatedEmployee;
         }
 
         //delete
