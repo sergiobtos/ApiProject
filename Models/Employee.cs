@@ -10,7 +10,7 @@ namespace ApiProject.Models
     public class Employee
     {
         [DynamoDBHashKey]
-        public int Id { get; set; }
+        public string Id { get; set; }
         [DynamoDBProperty]
         public string FullName { get; set; }
         [DynamoDBProperty]

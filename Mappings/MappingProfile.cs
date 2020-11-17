@@ -12,6 +12,7 @@ namespace ApiProject.Mappings
         public MappingProfile()
         {
             CreateMap<Employee, EmployeeDTO>();
+            CreateMap<EmployeeDTO, Employee>();
         }
     }
 }

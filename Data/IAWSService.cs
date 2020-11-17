@@ -9,10 +9,10 @@ namespace ApiProject.Data
     public interface IAWSService
     {
         Task<List<Employee>> GetAll();
-        Task<Employee> GetById(int Id);
+        Task<Employee> GetById(string Id);
         Task<Employee> CreateEmployee(Employee employee);
-        Task UpdateEmployee(int Id, Employee employee);
-        Task DeleteEmployee(int Id);
+        Task<Employee> UpdateEmployee(Employee employee);
+        Task<Employee> DeleteEmployee(string Id);
         void CreateTable();
     }
 }
