@@ -64,9 +64,9 @@ namespace ApiProject.Controllers
 
         //Put
         [HttpPut]
-        public async Task<ActionResult<Employee>> UpdateItem(Employee item)
+        public async Task<ActionResult<Employee>> UpdateItem(string _Id, Employee item)
         {
-            var employee = await new AWSServices(dynamoDBClient).UpdateEmployee(item);
+            var employee = await new AWSServices(dynamoDBClient).UpdateEmployee(_Id, item);
 
             return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
         }

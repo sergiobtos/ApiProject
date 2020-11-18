@@ -53,27 +53,40 @@ namespace ApiProject.Data
             return await GetById(employee.Id);
         }
 
-        //put
-
-        public async Task<Employee> UpdateEmployee(Employee employee)
-        { 
-            var key = new Dictionary<string, AttributeValue>
-            {
-                { "Id", new AttributeValue { S = employee.Id } }
-            };
-            var result = await dynamoDBClient.UpdateItemAsync("Employee", key, new Dictionary<string, AttributeValueUpdate>
-            {
-                { "FullName", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.FullName } } },
-                { "Email", new AttributeValueUpdate { Action = AttributeAction.PUT , Value = new AttributeValue { S = employee.Email } } },
-                { "Address", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.Address} } },
-                { "Role", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.Role} } },
-                { "Salary", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { N = employee.Salary.ToString()} } },
-                { "StartContractDate", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.StartContractDate} } },
-                { "EndContractDate", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.EndContractDate} } },
-            });
-            var updatedEmployee = GetById(employee.Id).Result;
-            return updatedEmployee;
+        public async Task<Employee> UpdateEmployee(string Id, Employee _employee)
+        {
+            DynamoDBContext Context = new DynamoDBContext(dynamoDBClient);
+            Employee employee = Context.LoadAsync<Employee>(Id, default(System.Threading.CancellationToken)).Result;
+            employee.FullName = _employee.FullName;
+            employee.Email = _employee.Email;
+            employee.Address = _employee.Address;
+            employee.Role = _employee.Role;
+            employee.Salary = _employee.Salary;
+            employee.StartContractDate = _employee.StartContractDate;
+            employee.EndContractDate = _employee.EndContractDate;
+            await Context.SaveAsync<Employee>(employee);
+            return await GetById(employee.Id);
         }
+
+        //public async Task<Employee> UpdateEmployee(Employee employee)
+        //{ 
+        //    var key = new Dictionary<string, AttributeValue>
+        //    {
+        //        { "Id", new AttributeValue { S = employee.Id } }
+        //    };
+        //    var result = await dynamoDBClient.UpdateItemAsync("Employee", key, new Dictionary<string, AttributeValueUpdate>
+        //    {
+        //        { "FullName", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.FullName } } },
+        //        { "Email", new AttributeValueUpdate { Action = AttributeAction.PUT , Value = new AttributeValue { S = employee.Email } } },
+        //        { "Address", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.Address} } },
+        //        { "Role", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.Role} } },
+        //        { "Salary", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { N = employee.Salary.ToString()} } },
+        //        { "StartContractDate", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.StartContractDate.ToString()} } },
+        //        { "EndContractDate", new AttributeValueUpdate { Action = AttributeAction.PUT, Value = new AttributeValue { S = employee.EndContractDate.ToString()} } },
+        //    });
+        //    var updatedEmployee = GetById(employee.Id).Result;
+        //    return updatedEmployee;
+        //}
 
         //delete
         public async Task<Employee> DeleteEmployee(string Id)

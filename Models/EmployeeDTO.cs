@@ -13,7 +13,7 @@ namespace ApiProject.Models
         public string Address { get; set; }
         public string Role { get; set; }
         public decimal Salary { get; set; }
-        public string StartContractDate { get; set; }
-        public string EndContractDate { get; set; }
+        public DateTime StartContractDate { get; set; }
+        public DateTime EndContractDate { get; set; }
     }
 }
