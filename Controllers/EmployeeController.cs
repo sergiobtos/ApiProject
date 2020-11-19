@@ -50,8 +50,8 @@ namespace ApiProject.Controllers
         }
 
         //Post
-        [HttpPost]
-        public async Task<ActionResult<EmployeeDTO>> CreateEmployee(EmployeeDTO dto)
+        [HttpPost()]
+        public async Task<ActionResult<EmployeeDTO>> CreateEmployee([FromBody] EmployeeDTO dto)
         {
             var item = _mapper.Map<Employee>(dto);
             Employee e = await new AWSServices(dynamoDBClient).CreateEmployee(item);
@@ -61,14 +61,21 @@ namespace ApiProject.Controllers
         }
 
 
-        [HttpPut]
-        public async Task<ActionResult<Employee>> UpdateItem(string _Id, Employee item)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Employee>> UpdateItem(string id, [FromBody] EmployeeDTO dto)
         {
-            var employee = await new AWSServices(dynamoDBClient).UpdateEmployee(_Id, item);
+            var item = _mapper.Map<Employee>(dto);
+            var employee = await new AWSServices(dynamoDBClient).UpdateEmployee(id, item);
+            var eDTO = _mapper.Map<EmployeeDTO>(employee);
 
-            return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
+            return CreatedAtAction(nameof(GetById), new { id = eDTO.Id }, eDTO);
         }
 
+        //[Route("Delete/{id}"), HttpDelete("{id}")]
+        //public void Delete([FromRoute]string id)
+        //{
+        //    var employee = new AWSServices(dynamoDBClient).DeleteEmployee(id).Result;
+        //}
 
         [HttpDelete("{id}")]
         public void Delete(string id)
