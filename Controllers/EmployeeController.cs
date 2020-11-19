@@ -13,13 +13,13 @@ namespace ApiProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class HomeController : ControllerBase
+    public class EmployeeController : ControllerBase
     {
 
         private IAmazonDynamoDB dynamoDBClient;
         private readonly IMapper _mapper;
 
-        public HomeController(IAmazonDynamoDB dynamoDBClient, IMapper mapper)
+        public EmployeeController(IAmazonDynamoDB dynamoDBClient, IMapper mapper)
         {
             this.dynamoDBClient = dynamoDBClient;
             this._mapper = mapper;
@@ -27,11 +27,10 @@ namespace ApiProject.Controllers
         }
 
         //GetAll
-        [HttpGet]
         [HttpGet("/api/getAll.{format}"), FormatFilter]
         public ActionResult<Task<List<EmployeeDTO>>> GetAll()
         {
-            
+
             var results = _mapper.Map<IEnumerable<EmployeeDTO>>(new AWSServices(dynamoDBClient).GetAll().Result);
             return Ok(results);
         }
@@ -62,7 +61,7 @@ namespace ApiProject.Controllers
             return CreatedAtAction(nameof(GetById), new { id = eDTO.Id }, eDTO);
         }
 
-        //Put
+
         [HttpPut]
         public async Task<ActionResult<Employee>> UpdateItem(string _Id, Employee item)
         {
@@ -71,7 +70,7 @@ namespace ApiProject.Controllers
             return CreatedAtAction(nameof(GetById), new { id = item.Id }, item);
         }
 
-        // Delete
+
         [HttpDelete("{id}")]
         public void Delete(string id)
         {
