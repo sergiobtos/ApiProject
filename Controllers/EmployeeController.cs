@@ -30,7 +30,6 @@ namespace ApiProject.Controllers
         [HttpGet("/api/getAll.{format}"), FormatFilter]
         public ActionResult<Task<List<EmployeeDTO>>> GetAll()
         {
-
             var results = _mapper.Map<IEnumerable<EmployeeDTO>>(new AWSServices(dynamoDBClient).GetAll().Result);
             return Ok(results);
         }

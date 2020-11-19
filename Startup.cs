@@ -54,7 +54,6 @@ namespace ApiProject
             {
                 app.UseHsts();
             }
-
             app.UseHttpsRedirection();
             app.UseMvc();
             app.UseSwagger();
